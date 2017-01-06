@@ -53,7 +53,7 @@ int write_val(char* pin, char* v) {
 
 //Read value from pin
 //Requires pin to be set as IN
-// 1 or 0 ??
+// 1 or 0 -- passes value out as ret_val
 int read_value(char* pin, char* ret_val) {
   char tmp[50];
   sprintf(tmp, "/sys/class/gpio/gpio%s/value", pin);
