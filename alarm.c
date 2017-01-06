@@ -1,3 +1,5 @@
+//Sets alarm at time given
+//Cannot set on next day
 #include "chip.h"
 #include <time.h>
 #include <unistd.h>
