@@ -3,29 +3,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define ALARM_FILE "alarms.sg" //filetype?
-#define LAMP "1014"   //XI0
-#define SNOOZE "1016" //XI2
-#define SILENT "1018" //XI4
-
-//TODO move to alarm.h
-struct alarm_t {
-  size_t hour;
-  size_t minute;
-  size_t light_pattern;
-  size_t week[7];
-}
-typedef struct alarm_t alarm;
-
-alarm _parse_to_alarm(char* str) {
-  return NULL;
-}
-
-void ring_alarm(alarm a) {
-  //check type of ring pattern
-}
-//==========================
-
 int main(int argc, char** argv) {
   //Read command line args
     //-s set alarms
