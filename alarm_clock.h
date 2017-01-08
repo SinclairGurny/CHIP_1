@@ -2,6 +2,11 @@
 #define __CHIP_H__
 #include "chip.h"
 
+#define ALARM_FILE "alarms.alrm"
+#define LAMP "1014"   //XI0
+#define SNOOZE "1016" //XI2
+#define SILENT "1018" //XI4
+
 //alarm struct
 
 struct alarm_t {
