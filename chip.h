@@ -3,7 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PIN0 1013
+#define PIN0 "1013"
+
+int has_gpio_access() {
+  //TODO -- check if can access a gpio file
+  return 0;
+}
 
 //Opens new GPIO pin
 //Does not check if GPIO pin exists

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+//TODO -- add reader, ls gpio, ...
 int main(int argc, char** argv) {
 	FILE *f;
 	char s[256], tmp[256];
@@ -54,4 +55,3 @@ int main(int argc, char** argv) {
 	printf("exiting\n");
 	return 0;
 }
-
