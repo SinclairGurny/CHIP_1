@@ -6,9 +6,9 @@
 #include <unistd.h>
 
 #define ALARM_FILE "alarms.alrm"
-#define LAMP "1014"   //XI0
-#define SNOOZE "1016" //XI2
-#define SILENT "1018" //XI4
+#define LAMP "1014"   //XIO-P1
+#define SNOOZE "1016" //XIO-P3
+#define SILENT "1018" //XIO-P5
 
 #define MAX_ALARMS 50
 #define SEC_PER_DAY 86400
@@ -25,31 +25,43 @@ struct alarm_type {
 typedef struct alarm_type chip_alarm;
 
 //alarm functions
-long _next_alarm_day(struct tm* curr, chip_alarm* alrm);
+long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today);
 
 long time_to_alarm(struct tm* curr, chip_alarm* alrm) {
   long dh = alrm->hour - curr->tm_hour;
-  long dm = alrm->minute - curr->tm_min;
-  long ds = alrm->minute - curr->tm_sec;
-  long days = _next_alarm_day(curr, alrm);
-  long tta = SEC_PER_DAY * days + 3600 * dh + 60 * dm + ds;
+  long dm = alrm->minute - curr->tm_min - 1;
+  long ds = 60 - curr->tm_sec;
+  long d_tod = 3600 * dh + 60 * dm + ds;
+  long days = _next_alarm_day(curr, alrm, d_tod > 0);
+  long tta = SEC_PER_DAY * days + d_tod;
   printf("Time to alarm: %ld\n", tta);
   return tta;
 }
 
-long _next_alarm_day(struct tm* curr, chip_alarm* alrm) {
+long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   int curr_day = curr->tm_wday;
   int i;
-  for (i = 0; i < 7; ++i) {
-    if (alrm->week[(curr_day + 1)%7] == 1) {
+  if (can_today == 1) i=0;
+  else i=1;
+  for (i; i < 7; ++i) {
+    if (alrm->week[(curr_day + i)%7] == 1) {
       return (long)i;
     }
   }
   return 8; // should not reach
 }
 
+void ring_alarm(chip_alarm* alrm) {
+  printf("RINGING...");
+  //TODO patterns, snooze, ...
+  //read current value of snooze button
+  while (true) {
+    //on
+    //delay
+  }
+}
+
 /*
-void ring_alarm(alarm a);
 void blink(size_t pause);
 void steady();
 void turn_off();
@@ -104,7 +116,7 @@ void print_alarm(chip_alarm* alrm) {
   for (j=0; j < 7; ++j) {
     if (alrm->week[j]) ++num_days;
   }
-  printf("Alarm: %02zu:%02zu on %zu days of the week with a %zums delay pattern\n",
+  printf("Alarm: %02zu:%02zu on %zu day(s) of the week with a %zums delay pattern\n",
           alrm->hour, alrm->minute, num_days, alrm->light_pattern);
 }
 

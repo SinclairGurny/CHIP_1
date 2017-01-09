@@ -78,6 +78,16 @@ int main(int argc, char** argv) {
     }
   }
 
+  print_alarm(next_alarm);
+  time(&now); current = localtime(&now);
+  long time_to_sleep = time_to_alarm(current, next_alarm);
+  if (time_to_sleep < 0) {
+    printf("ERROR -- alarm not valid");
+    return -1;
+  }
+  printf("Sleeping until alarm\n");
+  sleep(time_to_sleep);
+  ring_alarm(next_alarm);
 
   //do stuff
 	//make alarm structs from all alarms
