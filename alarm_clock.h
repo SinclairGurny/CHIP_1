@@ -27,6 +27,7 @@ typedef struct alarm_type chip_alarm;
 //alarm functions
 long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today);
 
+//calculates time to next alarm in milliseconds
 long time_to_alarm(struct tm* curr, chip_alarm* alrm) {
   long dh = alrm->hour - curr->tm_hour;
   long dm = alrm->minute - curr->tm_min - 1;
@@ -34,10 +35,10 @@ long time_to_alarm(struct tm* curr, chip_alarm* alrm) {
   long d_tod = 3600 * dh + 60 * dm + ds;
   long days = _next_alarm_day(curr, alrm, d_tod > 0);
   long tta = SEC_PER_DAY * days + d_tod;
-  printf("Time to alarm: %ld\n", tta);
   return tta;
 }
 
+//calculates number of days until the alarm can go off
 long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   int curr_day = curr->tm_wday;
   int i;
@@ -51,6 +52,7 @@ long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   return 8; // should not reach
 }
 
+//sets off alarm
 void ring_alarm(chip_alarm* alrm) {
   printf("RINGING...");
   //TODO patterns, snooze, ...
@@ -61,19 +63,12 @@ void ring_alarm(chip_alarm* alrm) {
   }
 }
 
-/*
-void blink(size_t pause);
-void steady();
-void turn_off();
-void is_snoozed();
-//parsing and other functions
-*/
-
 //Parsing functions
 void _parse_week(chip_alarm* alrm, char* str);
 void _parse_light_pattern(chip_alarm* alrm, char* str);
 void print_alarm(chip_alarm* alrm);
 
+//parse string from .alrm file into a struct
 chip_alarm* parse_to_alarm(char* str_alarm) {
   chip_alarm * alrm = (chip_alarm*)malloc(sizeof(chip_alarm));
   char* ptr = strtok(str_alarm, ":[]()"); alrm->hour = strtoul(ptr, NULL, 0);
@@ -83,6 +78,7 @@ chip_alarm* parse_to_alarm(char* str_alarm) {
   return alrm;
 }
 
+//parse weekdays into struct
 void _parse_week(chip_alarm* alrm, char* str) {
   memset(alrm->week, 0, 7);
   if (strchr(str, 'M') != NULL || strchr(str, 'A') != NULL || strchr(str, 'D') != NULL) {
@@ -102,6 +98,7 @@ void _parse_week(chip_alarm* alrm, char* str) {
   }
 }
 
+//parse light pattern into struct
 void _parse_light_pattern(chip_alarm* alrm, char* str) {
   if (strchr(str, 'C') != NULL) {
     alrm->light_pattern = 0;
@@ -110,7 +107,7 @@ void _parse_light_pattern(chip_alarm* alrm, char* str) {
   }
 }
 
-//Printing functions
+//prints some details of an alarm
 void print_alarm(chip_alarm* alrm) {
   size_t j=0; size_t num_days=0;
   for (j=0; j < 7; ++j) {
