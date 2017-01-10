@@ -66,11 +66,11 @@ int _snooze_hit(char* prev_val) {
 
 //sets off alarm
 void ring_alarm(chip_alarm* alrm) {
-  printf("RINGING...");
+  printf("RINGING...\n");
   //read current value of snooze button
   char prev_val[10]; read_value(SNOOZE, prev_val);
   while (_snooze_hit(prev_val) == 0) {
-    //on
+    printf("BZZZZZ\n");
     write_val(LAMP, "1");
     usleep(alrm->on_time);
     if (_snooze_hit(prev_val) == 1) break;

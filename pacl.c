@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
     //sleep until alarm
     sleep(time_to_sleep);
     printf("RING\n");
-    //ring_alarm(next_alarm); //Wait for snooze to be pressed to turn off
+    ring_alarm(next_alarm); //Wait for snooze to be pressed to turn off
     break; //DEBUG
   }
   printf("exiting\n");
