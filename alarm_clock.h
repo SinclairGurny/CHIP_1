@@ -19,11 +19,12 @@
 struct alarm_type {
   size_t hour;
   size_t minute;
-  size_t light_pattern; //delay in milliseconds
+  size_t on_time;   //how long to blink on in milliseconds
+  size_t off_time; //how long to stay off
   size_t week[7]; //starts on Sunday
 };
 typedef struct alarm_type chip_alarm;
-
+//===================================================================
 //alarm functions
 long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today);
 
@@ -44,7 +45,8 @@ long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   int i;
   if (can_today == 1) i=0;
   else i=1;
-  for (i; i < 7; ++i) {
+  for (; i < 7; ++i) {
+    printf("Week: %zu\n", alrm->week[(curr_day + i)%7]);
     if (alrm->week[(curr_day + i)%7] == 1) {
       return (long)i;
     }
@@ -52,17 +54,58 @@ long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   return 8; // should not reach
 }
 
-//sets off alarm
-void ring_alarm(chip_alarm* alrm) {
-  printf("RINGING...");
-  //TODO patterns, snooze, ...
-  //read current value of snooze button
-  while (true) {
-    //on
-    //delay
+int _snooze_hit(char* prev_val) {
+  char curr_val[10];
+  read_value(SNOOZE, curr_val);
+  if (strcmp( curr_val, prev_val ) == 0) {
+    return 0;
+  } else {
+    return 1;
   }
 }
 
+//sets off alarm
+void ring_alarm(chip_alarm* alrm) {
+  printf("RINGING...");
+  //read current value of snooze button
+  char prev_val[10]; read_value(SNOOZE, prev_val);
+  while (_snooze_hit(prev_val) == 0) {
+    //on
+    write_val(LAMP, "1");
+    usleep(alrm->on_time);
+    if (_snooze_hit(prev_val) == 1) break;
+    if (alrm->off_time > 0) {
+      write_val(LAMP, "1");
+      usleep(alrm->off_time);
+    }
+  }
+  printf("Alarm off");
+}
+
+//============================================================
+//Silent mode
+int is_silent_mode() {
+  char val[10];
+  read_value(SILENT, val);
+  if (strcmp( val, "1") == 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+void silent_mode() {
+  char val[10];
+  while (1) {
+    read_value(SILENT, val);
+    printf("Silent mode? %s\n", val);
+    if (strcmp( val, "1") == 0) {
+      usleep(500);
+    }
+  }
+}
+
+//============================================================
 //Parsing functions
 void _parse_week(chip_alarm* alrm, char* str);
 void _parse_light_pattern(chip_alarm* alrm, char* str);
@@ -80,7 +123,8 @@ chip_alarm* parse_to_alarm(char* str_alarm) {
 
 //parse weekdays into struct
 void _parse_week(chip_alarm* alrm, char* str) {
-  memset(alrm->week, 0, 7);
+  int i;
+  for (i=0; i<7; ++i) alrm->week[i]=0;
   if (strchr(str, 'M') != NULL || strchr(str, 'A') != NULL || strchr(str, 'D') != NULL) {
     alrm->week[1] = 1;
   } if (strchr(str, 'T') != NULL || strchr(str, 'A') != NULL || strchr(str, 'D') != NULL) {
@@ -101,9 +145,12 @@ void _parse_week(chip_alarm* alrm, char* str) {
 //parse light pattern into struct
 void _parse_light_pattern(chip_alarm* alrm, char* str) {
   if (strchr(str, 'C') != NULL) {
-    alrm->light_pattern = 0;
+    alrm->on_time = 500;
+    alrm->off_time = 0;
   } if (strchr(str, 'B') != NULL) {
-    alrm->light_pattern = strtoul(str+1, NULL, 0);
+    char * ptr = strtok(str, "B|");
+    alrm->on_time = strtoul(ptr, NULL, 0);
+    alrm->off_time = strtoul(ptr, NULL, 0);
   }
 }
 
@@ -113,8 +160,8 @@ void print_alarm(chip_alarm* alrm) {
   for (j=0; j < 7; ++j) {
     if (alrm->week[j]) ++num_days;
   }
-  printf("Alarm: %02zu:%02zu on %zu day(s) of the week with a %zums delay pattern\n",
-          alrm->hour, alrm->minute, num_days, alrm->light_pattern);
+  printf("Alarm: %02zu:%02zu on %zu day(s) of the week with a %zu/%zums delay pattern\n",
+          alrm->hour, alrm->minute, num_days, alrm->on_time, alrm->off_time);
 }
 
 #endif
