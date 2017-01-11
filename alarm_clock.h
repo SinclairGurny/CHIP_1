@@ -94,7 +94,7 @@ int is_silent_mode() {
 }
 
 void silent_mode() {
-  char val[10, new_val[10];
+  char val[10], new_val[10];
   while (1) {
     read_value(SILENT, new_val);
     if (strcmp(val, new_val) != 0) {
