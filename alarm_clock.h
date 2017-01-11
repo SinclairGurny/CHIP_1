@@ -83,6 +83,8 @@ void ring_alarm(chip_alarm* alrm) {
 
 //============================================================
 //Silent mode
+
+//check if silent mode is on/off
 int is_silent_mode() {
   char val[10];
   read_value(SILENT, val);
@@ -93,14 +95,17 @@ int is_silent_mode() {
   }
 }
 
+//run silent mode
 void silent_mode() {
+  printf("Entering Silent Mode\n");
   char val[10], new_val[10];
   while (1) {
     read_value(SILENT, new_val);
-    if (strcmp(val, new_val) != 0) {
+    if (strcmp(val, new_val) == 0) {
       usleep(500);
-    }
+    } else break;
   }
+  printf("Exiting Silent Mode\n");
 }
 
 //============================================================

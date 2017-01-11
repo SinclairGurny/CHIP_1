@@ -6,7 +6,7 @@
 
 //opens pins that are used
 void pin_setup() {
-  open_pin(LAMP); write_dir(LAMP, "out");
+  open_pin(LAMP); write_dir(LAMP, "out"); write_val(LAMP, "0");
   open_pin(SNOOZE); write_dir(SNOOZE, "in");
   open_pin(SILENT); write_dir(SILENT, "in");
 }
@@ -140,7 +140,6 @@ int main(int argc, char** argv) {
     sleep(time_to_sleep);
     printf("RING\n"); //DEBUG
     ring_alarm(next_alarm); //Wait for snooze to be pressed to turn off
-    break; //DEBUG
   }
   printf("exiting\n");
   delete_alarms(all_alarms, num_alarms);
