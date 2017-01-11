@@ -46,7 +46,6 @@ long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today) {
   if (can_today == 1) i=0;
   else i=1;
   for (; i < 7; ++i) {
-    printf("Week: %zu\n", alrm->week[(curr_day + i)%7]);
     if (alrm->week[(curr_day + i)%7] == 1) {
       return (long)i;
     }
@@ -95,11 +94,10 @@ int is_silent_mode() {
 }
 
 void silent_mode() {
-  char val[10];
+  char val[10, new_val[10];
   while (1) {
-    read_value(SILENT, val);
-    printf("Silent mode? %s\n", val);
-    if (strcmp( val, "1") == 0) {
+    read_value(SILENT, new_val);
+    if (strcmp(val, new_val) != 0) {
       usleep(500);
     }
   }
@@ -154,6 +152,7 @@ void _parse_light_pattern(chip_alarm* alrm, char* str) {
   }
 }
 
+//======================================================================
 //prints some details of an alarm
 void print_alarm(chip_alarm* alrm) {
   size_t j=0; size_t num_days=0;

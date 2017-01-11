@@ -4,26 +4,30 @@
 #include <stdio.h>
 #include <string.h>
 
+//opens pins that are used
 void pin_setup() {
   open_pin(LAMP); write_dir(LAMP, "out");
   open_pin(SNOOZE); write_dir(SNOOZE, "in");
   open_pin(SILENT); write_dir(SILENT, "in");
 }
 
+//closes pins that are used
 void pin_cleanup() {
   write_val(LAMP, "0"); close_pin(LAMP);
   close_pin(SNOOZE);
   close_pin(SILENT);
 }
 
+//deallocate memory
 void delete_alarms(chip_alarm ** all_alarms, int num_alarms) {
   int i;
   for (i=0; i < num_alarms; ++i) {
     free(all_alarms[i]);
+    all_alarms[i] = NULL;
   }
-  //TODO
 }
 
+//read alarms in from alarm file
 int read_alarms(chip_alarm ** all_alarms, size_t * num_alarms) {
   //Read in alarms
   FILE * alarm_file_ptr = fopen(ALARM_FILE, "r");
@@ -50,6 +54,7 @@ int read_alarms(chip_alarm ** all_alarms, size_t * num_alarms) {
   return 0;
 }
 
+//find next alarm
 chip_alarm* find_soonest_alarm(chip_alarm** all_alarms, int num_alarms, chip_alarm* next_alarm) {
   //Calculate current time
   time_t now; struct tm* current;
@@ -106,10 +111,6 @@ int main(int argc, char** argv) {
     printf("Alarms not valid");
     return 0;
   }
-  int i;
-  for (i=0; i < num_alarms; ++i) {
-    print_alarm(all_alarms[i]);
-  }
 
   while (1) {
     //Check for silent mode
@@ -134,7 +135,7 @@ int main(int argc, char** argv) {
     printf("Sleeping until alarm (%ld)s\n", time_to_sleep); //DEBUG
     //sleep until alarm
     sleep(time_to_sleep);
-    printf("RING\n");
+    printf("RING\n"); //DEBUG
     ring_alarm(next_alarm); //Wait for snooze to be pressed to turn off
     break; //DEBUG
   }
