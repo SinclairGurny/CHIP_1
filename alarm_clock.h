@@ -74,11 +74,12 @@ void ring_alarm(chip_alarm* alrm) {
     usleep(alrm->on_time);
     if (_snooze_hit(prev_val) == 1) break;
     if (alrm->off_time > 0) {
-      write_val(LAMP, "1");
+      write_val(LAMP, "0");
       usleep(alrm->off_time);
     }
   }
-  printf("Alarm off");
+  printf("Alarm off\n");
+  write_val(LAMP, "0");
 }
 
 //============================================================
