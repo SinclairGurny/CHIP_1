@@ -2,6 +2,9 @@
 #include <time.h>
 
 int main() {
+  FILE * chip = fopen("/sys/class/gpio/export", "w");
+  if (chip == NULL) { printf("Unsuccessful 2\n"); return 1; }
+  fclose(chip);
   FILE * f = fopen("/home/chip/Desktop/foo.txt", "w");
   if (f == NULL) { printf("Unsuccessful 1\n"); return 1; }
   time_t now; struct tm* current;
