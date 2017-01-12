@@ -71,11 +71,11 @@ void ring_alarm(chip_alarm* alrm) {
   while (_snooze_hit(prev_val) == 0) {
     printf("BZZZZZ\n");
     write_val(LAMP, "1");
-    usleep(alrm->on_time);
-    if (_snooze_hit(prev_val) == 1) break;
+    usleep(alrm->on_time*1000);
+   // if (_snooze_hit(prev_val) == 1) break;
     if (alrm->off_time > 0) {
       write_val(LAMP, "0");
-      usleep(alrm->off_time);
+      usleep(alrm->off_time*1000);
     }
   }
   printf("Alarm off\n");

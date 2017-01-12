@@ -13,9 +13,9 @@ void pin_setup() {
   int i;
   for (i=0; i<3; ++i) {
     write_val(LAMP, "1");
-    usleep(1000);
+    usleep(200000);
     write_val(LAMP, "0");
-    usleep(1000);
+    usleep(50000);
   }
 }
 
@@ -142,10 +142,10 @@ int main(int argc, char** argv) {
     }
     printf("Sleeping until alarm (%ld)s\n", time_to_sleep); //DEBUG
     //sleep until alarm
+    sleep(time_to_sleep);
     if (is_silent_mode()) {
       continue;
     }
-    sleep(time_to_sleep);
     printf("RING\n"); //DEBUG
     ring_alarm(next_alarm); //Wait for snooze to be pressed to turn off
   }
