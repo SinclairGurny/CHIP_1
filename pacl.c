@@ -9,6 +9,14 @@ void pin_setup() {
   open_pin(LAMP); write_dir(LAMP, "out"); write_val(LAMP, "0");
   open_pin(SNOOZE); write_dir(SNOOZE, "in");
   open_pin(SILENT); write_dir(SILENT, "in");
+  //Blink three times
+  int i;
+  for (i=0; i<3; ++i) {
+    write_val(LAMP, "1");
+    usleep(1000);
+    write_val(LAMP, "0");
+    usleep(1000);
+  }
 }
 
 //closes pins that are used
