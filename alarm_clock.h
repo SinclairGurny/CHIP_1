@@ -10,7 +10,7 @@
 #define SNOOZE "1016" //XIO-P3
 #define SILENT "1018" //XIO-P5
 
-#define MAX_ALARMS 50
+#define MAX_ALARMS 300
 #define SEC_PER_DAY 86400
 
 #define ALRM_DELIMS ":[]()"
@@ -24,6 +24,12 @@ struct alarm_type {
   size_t week[7]; //starts on Sunday
 };
 typedef struct alarm_type chip_alarm;
+
+//sleep in milliseconds
+void m_sleep(int dur) {
+  sleep( (dur - dur%1000)/1000 );
+  usleep( (dur%1000)*1000 );
+}
 //===================================================================
 //alarm functions
 long _next_alarm_day(struct tm* curr, chip_alarm* alrm, int can_today);
@@ -71,11 +77,11 @@ void ring_alarm(chip_alarm* alrm) {
   while (_snooze_hit(prev_val) == 0) {
     printf("BZZZZZ\n");
     write_val(LAMP, "1");
-    usleep(alrm->on_time*1000);
+    m_sleep(alrm->on_time);
    // if (_snooze_hit(prev_val) == 1) break;
     if (alrm->off_time > 0) {
       write_val(LAMP, "0");
-      usleep(alrm->off_time*1000);
+      m_sleep(alrm->off_time);
     }
   }
   printf("Alarm off\n");
@@ -103,7 +109,7 @@ void silent_mode() {
   while (1) {
     read_value(SILENT, new_val);
     if (strcmp(val, new_val) == 0) {
-      usleep(500);
+      m_sleep(50);
     } else break;
   }
   printf("Exiting Silent Mode\n");

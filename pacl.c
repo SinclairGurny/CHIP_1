@@ -13,9 +13,9 @@ void pin_setup() {
   int i;
   for (i=0; i<3; ++i) {
     write_val(LAMP, "1");
-    usleep(200000);
+    m_sleep(200);
     write_val(LAMP, "0");
-    usleep(50000);
+    m_sleep(50);
   }
 }
 
