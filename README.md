@@ -1,3 +1,5 @@
+# Really nothing interesting to see here :)
+
 # CHIP_1
 
 My programs to control CHIP
